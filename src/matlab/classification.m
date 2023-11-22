@@ -3,7 +3,8 @@ clear variables
 
 % Load the flower images into a dataset
 
-flowersDataset = fullfile("17flowers/");
+src = cd;
+flowersDataset = fullfile(src, "/17flowers/");
 
 % Images are stored in a folder with their label type
 imds = imageDatastore(flowersDataset, ...

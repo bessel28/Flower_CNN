@@ -1,7 +1,8 @@
 close all;
 clear;
 
-dataDir = fullfile("daffodilSeg");
+src = cd;
+dataDir = fullfile(src, "\daffodilSeg");
 imDir = fullfile(dataDir,'ImagesRsz256');
 pxDir = fullfile(dataDir,'LabelsRsz256');
 
@@ -13,8 +14,8 @@ pixelLabelID = [1 2 3 4];
 
 %groundtruth labels
 pxds = pixelLabelDatastore(pxDir,classNames,pixelLabelID);
-if ~exist("daffodilSeg\temp", 'dir')
-    mkdir("daffodilSeg\temp")
+if ~exist(dataDir + "\temp", 'dir')
+    mkdir(dataDir + "\temp")
 end
 
 for i = 1:size(pxds.Files, 1)
@@ -26,12 +27,12 @@ labelMatrix = uint8(binL);
 
 % Save the label matrix as an image
 index = sprintf('%04d', i);
-imwrite(labelMatrix, "daffodilSeg\temp\groundtruth" + index + ".png");
+imwrite(labelMatrix, dataDir + "\temp\groundtruth" + index + ".png");
 end
 
 classNames = ["background" "flower"];
 
-pxds =  pixelLabelDatastore(fullfile("daffodilSeg\temp"),classNames ,[0 1]);
+pxds =  pixelLabelDatastore(fullfile(dataDir + "\temp"),classNames ,[0 1]);
 
 [imdsTrain, imdsVal, pxdsTrain, pxdsVal] = partitionCamVidData(imds,pxds);
 
@@ -189,7 +190,10 @@ function [outLabels, info] = catLabelsCell(inLabels, info)
 end
 
 function [imdsTrain, imdsVal, pxdsTrain, pxdsVal] = partitionCamVidData(imds,pxds)
+% Partition CamVid data by randomly selecting 60% of the data for training. The
+% rest is used for testing.
     
+% Set initial random state for example reproducibility.
 rng(0); 
 numFiles = numel(imds.Files);
 shuffledIndices = randperm(numFiles);
@@ -236,8 +240,8 @@ for i = 1:size(results.Files,1)
     
     % Save the binary matrix as an image
     index = sprintf('%04d', i);
-    imwrite(binaryMatrix, "daffodilSeg\Output\pixelLabel_" + index + ".png");
+    imwrite(binaryMatrix, dataDir + "\Output\pixelLabel_" + index + ".png");
 end
-dilutedLabels = pixelLabelDatastore(fullfile('daffodilSeg\Output'), ...
+dilutedLabels = pixelLabelDatastore(fullfile(dataDir + "\Output"), ...
     ["background" "flower"], [0 1]);
 end
