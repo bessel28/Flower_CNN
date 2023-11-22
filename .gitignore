@@ -1,1 +1,5 @@
-daffodilSeg/Output/*
+*/Output/*
+*.mat
+savedmodels/*
+daffodilSeg/temp/*
+pixelLabel*.png
